@@ -13,85 +13,56 @@
 // limitations under the License.
 // ==============================================================================
 
+// import('TBPluginLibTest.js');
+// import TB from './TBPluginLibTest.js';
+
+// fetch('/data/plugin/scalars')
+
+import * as DOM from './dom.js';
+
 export async function render() {
-  const msg = createElement('p', 'Fetching data…');
-  document.body.appendChild(msg);
+  document.body.innerHTML = `
+    <div id="content"></div>
+    <div id="preview"></div>
+    <textarea id="editor"></textarea>
+  `;
+  const data = await (await fetch('./runs')).json();
+  const runs = Object.keys(data);
+  const runToTags = run => data[run].tensors;
 
-  const runToTags = await fetch('./tags').then((response) => response.json());
-  const data = await Promise.all(
-    Object.entries(runToTags).flatMap(([run, tagToDescription]) =>
-      Object.keys(tagToDescription).map((tag) =>
-        fetch('./greetings?' + new URLSearchParams({run, tag}))
-          .then((response) => response.json())
-          .then((greetings) => ({
-            run,
-            tag,
-            greetings,
-          }))
-      )
-    )
-  );
+  const contentEl = document.querySelector('#content');
+  const previewEl = document.querySelector('#preview');
+  const editorEl = document.querySelector('#editor');
+  
+  console.log(runs)
+  const select = DOM.create('select');
+  for (const run of runs) {
+    const option = DOM.create('option');
+    option.value = run;
+    option.textContent = run;
+    select.appendChild(option);
+  }
 
-  const style = createElement(
-    'style',
-    `
-      thead {
-        border-bottom: 1px black solid;
-        border-top: 2px black solid;
-      }
-      tbody {
-        border-bottom: 2px black solid;
-      }
-      table {
-        border-collapse: collapse;
-      }
-      td,
-      th {
-        padding: 2pt 8pt;
-      }
-    `
-  );
-  style.innerText = style.textContent;
-  document.head.appendChild(style);
-
-  const table = createElement('table', [
-    createElement(
-      'thead',
-      createElement('tr', [
-        createElement('th', 'Run'),
-        createElement('th', 'Tag'),
-        createElement('th', 'Greetings'),
-      ])
-    ),
-    createElement(
-      'tbody',
-      data.flatMap(({run, tag, greetings}) =>
-        greetings.map((guest, i) =>
-          createElement('tr', [
-            createElement('td', i === 0 ? run : null),
-            createElement('td', i === 0 ? tag : null),
-            createElement('td', guest),
-          ])
-        )
-      )
-    ),
-  ]);
-  msg.textContent = 'Data loaded.';
-  document.body.appendChild(table);
-}
-
-function createElement(tag, children) {
-  const result = document.createElement(tag);
-  if (children != null) {
-    if (typeof children === 'string') {
-      result.textContent = children;
-    } else if (Array.isArray(children)) {
-      for (const child of children) {
-        result.appendChild(child);
-      }
-    } else {
-      result.appendChild(children);
+  select.onchange = async function() {
+    console.log('changed select')
+    const run = select.value;
+    const tags = runToTags(run);
+    const results = new Map();
+    for (let tag of tags) {
+      const p = new URLSearchParams({run, tag});
+      const result = await (await fetch('./scalars?' + p.toString())).json();
+      results.set(tag, result);
+    }
+    previewEl.innerHTML = '';
+    for (let [tag, result] of results) {
+      previewEl.innerHTML += `${tag} : ${JSON.stringify(result)}`
     }
   }
-  return result;
+
+  editorEl.addEventListener('keyup', () => {
+    console.log('change', editorEl.value)
+    contentEl.innerHTML = editorEl.value;
+  })
+
+  document.body.appendChild(select);
 }
