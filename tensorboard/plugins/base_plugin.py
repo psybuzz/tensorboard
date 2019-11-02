@@ -313,6 +313,16 @@ class TBLoader(object):
     """
     pass
 
+  def load(self, context):
+    """Returns the debugger plugin, if possible.
+
+    Args:
+      context: The TBContext flags including `add_arguments`.
+
+    Returns:
+      A DebuggerPlugin instance or None if it couldn't be loaded.
+    """
+
 
 class BasicLoader(TBLoader):
   """Simple TBLoader that's sufficient for most plugins."""
