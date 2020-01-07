@@ -41,7 +41,10 @@ class EventSender {
  */
 function maybeSendEvent(prevState: State, action: Action) {
   switch (action.type) {
-    // Expect this list to grow... ()
+    // Expect this list to grow...
+    // Please do not apply too much logic in the case statement. You want it
+    // to read like simple enumeration of all the cases when events get fired.
+    // Factor the logic out if need be.
     case changePlugin.type:
       util.EventSender.sendPageView(
         window.location.pathname,
