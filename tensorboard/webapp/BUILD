@@ -22,6 +22,7 @@ ng_module(
     ],
     deps = [
         ":config",
+        "//tensorboard/webapp/analytics",
         "//tensorboard/webapp/angular:expect_angular_platform_browser_animations",
         "//tensorboard/webapp/core",
         "//tensorboard/webapp/core/actions",
@@ -133,6 +134,7 @@ tensorboard_html_binary(
 tf_ng_web_test_suite(
     name = "karma_test",
     deps = [
+        "//tensorboard/webapp/analytics:test_lib",
         "//tensorboard/webapp/core/effects:core_effects_test_lib",
         "//tensorboard/webapp/core/store:core_store_test_lib",
         "//tensorboard/webapp/header:test_lib",

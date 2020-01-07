@@ -20,6 +20,8 @@ import {
   MetaReducer,
 } from '@ngrx/store';
 
+import {analyticsMetaReducer} from './analytics';
+
 export interface State {}
 
 // console.log all actions
@@ -36,8 +38,14 @@ export function logger(reducer: ActionReducer<any>): ActionReducer<any> {
   };
 }
 
+const prodMetaReducers = [analyticsMetaReducer];
+const devMetaReducers = [logger];
+
 export const metaReducers: MetaReducer<any>[] =
-  config.env === 'dev' ? [logger] : [];
+  config.env === 'dev'
+    ? prodMetaReducers.concat(devMetaReducers)
+    : prodMetaReducers;
+
 
 export const ROOT_REDUCERS = new InjectionToken<
   ActionReducerMap<State, Action>
