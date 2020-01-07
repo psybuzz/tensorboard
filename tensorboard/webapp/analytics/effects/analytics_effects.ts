@@ -40,8 +40,7 @@ export class AnalyticsEffects {
       distinct(),
       tap(([action, pluginId]) => {
         this.sendPageView(pluginId!);
-      }),
-      map(([action]) => action)
+      })
     );
   }
 
