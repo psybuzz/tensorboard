@@ -13,8 +13,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 import {Action, ActionReducer} from '@ngrx/store';
-import {coreLoaded} from '../core/actions';
+import {changePlugin} from '../core/actions';
 import {getActivePlugin} from '../core/store';
+import {State} from '../app_state';
 
 // We fake the global 'ga' object, so the object is a noop. The
 // google.analytics typing gives the object a type of UniversalAnalytics.ga.
@@ -22,43 +23,42 @@ import {getActivePlugin} from '../core/store';
 declare const ga: Function;
 
 class EventSender {
-  static sendPageView(pathAndPlugin: string) {
-    ga('set', 'page', pathAndPlugin);
-    ga('send', 'pageview');
+  static sendPageView(path: string, plugin: string) {
+    console.log(`send page view: ${path}/${plugin}`);
+    // ga('set', 'page', `${path}/${plugin}`);
+    // ga('send', 'pageview');
   }
 }
 
-// Send analytics when the activePlugin changes.
+/**
+ * Method 1: send events baesd on action and current state only.
+ *
+ * Trade-off:
+ * - you log what *user did to the system*, not system reacting to the action,
+ *   which is often good enough.
+ * - if you want to only log based on diff, it becomes a bit harder
+ *   - idea: you can use something like rxjs to make sure it is distinct.
+ */
+function maybeSendEvent(prevState: State, action: Action) {
+  switch (action.type) {
+    // Expect this list to grow... ()
+    case changePlugin.type:
+      util.EventSender.sendPageView(
+        window.location.pathname,
+        (action as ReturnType<typeof changePlugin>).plugin
+      );
+      break;
+  }
+}
+
 export function analyticsMetaReducer(
   reducer: ActionReducer<any>
 ): ActionReducer<any> {
-  // Must wait for 'core' to load before using its 'getActivePlugin' selector.
-  let isCoreLoaded = false;
-
-  return (state, action: Action) => {
-    if (action.type === coreLoaded.type) {
-      isCoreLoaded = true;
-      return reducer(state, action);
-    }
-    if (!isCoreLoaded) return reducer(state, action);
-
-    const oldActivePlugin = util.getActivePlugin(state);
-    const nextState = reducer(state, action);
-    const newActivePlugin = util.getActivePlugin(nextState);
-
-    if (newActivePlugin && oldActivePlugin !== newActivePlugin) {
-      util.EventSender.sendPageView(getPathAndPlugin(newActivePlugin));
-    }
-
-    return nextState;
+  return (state: State, action: Action) => {
+    maybeSendEvent(state, action);
+    return reducer(state, action);
   };
 }
 
-function getPathAndPlugin(pluginString: string) {
-  let pathname = window.location.pathname;
-  pathname += pathname.endsWith('/') ? pluginString : '/' + pluginString;
-  return pathname;
-}
-
-const util = { getActivePlugin, EventSender } as any;
+const util = {getActivePlugin, EventSender} as any;
 export const TEST_ONLY = {util};

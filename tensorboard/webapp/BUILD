@@ -38,6 +38,16 @@ ng_module(
 )
 
 tf_ts_library(
+    name = "app_state",
+    srcs = [
+        "app_state.ts",
+    ],
+    deps = [
+        "//tensorboard/webapp/core/store",
+    ],
+)
+
+tf_ts_library(
     name = "config",
     srcs = [
         "config_dev.ts",
@@ -124,8 +134,8 @@ tf_web_library(
 tensorboard_html_binary(
     name = "ng_index",
     input_path = "/index.html",
-    output_path = "/ng_index.html",
     js_path = "/ng_index.js",
+    output_path = "/ng_index.html",
     deps = [":tensorboard-webapp"],
 )
 

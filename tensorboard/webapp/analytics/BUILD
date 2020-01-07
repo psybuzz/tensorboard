@@ -1,15 +1,20 @@
+load("//tensorboard/defs:defs.bzl", "tf_ts_library")
+load("@npm_angular_bazel//:index.bzl", "ng_module")
+
 package(default_visibility = ["//tensorboard:internal"])
 
-load("//tensorboard/defs:defs.bzl", "tf_ts_library")
-
-tf_ts_library(
+ng_module(
     name = "analytics",
     srcs = [
+        "analytics_module.ts",
         "index.ts",
     ],
     deps = [
+        "//tensorboard/webapp/analytics/effects",
         "//tensorboard/webapp/core/actions",
         "//tensorboard/webapp/core/store",
+        "@npm//@angular/core",
+        "@npm//@ngrx/effects",
         "@npm//@ngrx/store",
     ],
 )
