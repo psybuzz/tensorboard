@@ -36,7 +36,7 @@ tf_web_library(
         "//tensorboard/components/tf_paginated_view",
         "//tensorboard/components/tf_runs_selector",
         "//tensorboard/components/tf_storage",
-        "//tensorboard/components/tf_tensorboard:registry",
+        "//tensorboard/components_polymer3/tf_tensorboard:registry_legacy",
         "//tensorboard/components/vz_line_chart2",
         "//tensorboard/plugins/graph/tf_graph",
         "//tensorboard/plugins/graph/tf_graph_loader",

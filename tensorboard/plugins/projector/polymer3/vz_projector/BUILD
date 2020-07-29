@@ -66,7 +66,7 @@ tf_web_library(
         "//tensorboard/components/tf_imports:threejs",
         "//tensorboard/components/tf_imports:umap-js",
         "//tensorboard/components/tf_imports:weblas",
-        "//tensorboard/components/tf_tensorboard:registry",
+        "//tensorboard/components_polymer3/tf_tensorboard:registry_legacy",
         "@org_polymer_iron_collapse",
         "@org_polymer_iron_icons",
         "@org_polymer_paper_button",

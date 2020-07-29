@@ -24,7 +24,7 @@ tf_web_library(
         "//tensorboard/components/tf_imports:polymer",
         "//tensorboard/components/tf_paginated_view",
         "//tensorboard/components/tf_runs_selector",
-        "//tensorboard/components/tf_tensorboard:registry",
+        "//tensorboard/components_polymer3/tf_tensorboard:registry_legacy",
         "//tensorboard/plugins/histogram/vz_histogram_timeseries",
         "@org_polymer_iron_collapse",
         "@org_polymer_iron_icon",

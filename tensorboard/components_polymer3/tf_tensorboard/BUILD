@@ -1,4 +1,5 @@
 load("//tensorboard/defs:web.bzl", "tf_web_library")
+load("//tensorboard/defs:defs.bzl", "tf_ts_library")
 
 package(default_visibility = ["//tensorboard:internal"])
 
@@ -14,7 +15,7 @@ tf_web_library(
     path = "/tf-tensorboard",
     visibility = ["//visibility:public"],
     deps = [
-        ":registry",
+        ":registry_legacy",
         "//tensorboard/components/experimental/plugin_util:plugin_host",
         "//tensorboard/components/tf_backend",
         "//tensorboard/components/tf_dashboard_common",
@@ -36,11 +37,19 @@ tf_web_library(
     ],
 )
 
-tf_web_library(
+tf_ts_library(
     name = "registry",
     srcs = [
-        "registry.html",
         "registry.ts",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+tf_web_library(
+    name = "registry_legacy",
+    srcs = [
+        "registry.html",
+        "registry-legacy.ts",
     ],
     path = "/tf-tensorboard",
     visibility = ["//visibility:public"],
