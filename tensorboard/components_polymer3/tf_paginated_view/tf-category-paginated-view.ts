@@ -277,7 +277,7 @@ class TfCategoryPaginatedView<CategoryItem> extends TfDomRepeat<CategoryItem> {
   @property({
     type: Boolean,
     notify: true,
-    readOnly: true,
+    // readOnly: true,
   })
   opened: boolean;
 

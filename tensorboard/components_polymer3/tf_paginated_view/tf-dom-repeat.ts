@@ -58,7 +58,7 @@ export class TfDomRepeat<T extends {}> extends LegacyElementMixin(
    * @protected
    */
   @property({type: Boolean})
-  protected _contentActive = true;
+  protected _contentActive;
 
   @property({type: Boolean})
   _domBootstrapped = false;

@@ -1,4 +1,4 @@
-load("//tensorboard/defs:defs.bzl", "tf_ts_library")
+load("//tensorboard/defs:defs.bzl", "tf_js_binary", "tf_ts_library")
 load("//tensorboard/defs:web.bzl", "tf_web_library")
 load("//tensorboard/defs:vulcanize.bzl", "tensorboard_html_binary")
 
@@ -35,6 +35,39 @@ tf_web_library(
     path = "/",
     deps = [
         ":polymer_lib_binary",
+    ],
+)
+
+tf_ts_library(
+    name = "polymer3_ts_lib",
+    srcs = ["polymer3_lib.ts"],
+    deps = [
+        "//tensorboard/components_polymer3/tf_backend",
+        "//tensorboard/components_polymer3/tf_globals",
+        "//tensorboard/components_polymer3/tf_markdown_view",
+        "//tensorboard/components_polymer3/tf_storage",
+        "//tensorboard/components_polymer3/tf_paginated_view",
+        "//tensorboard/plugins/graph/polymer3/tf_graph_dashboard",
+    ],
+)
+
+tf_js_binary(
+    name = "polymer3_lib_binary",
+    compile = True,
+    entry_point = ":polymer3_lib.ts",
+    format = "iife",
+    deps = [":polymer3_ts_lib"],
+)
+
+# Wrap the Polymer3 app JS binary as a library.
+tf_web_library(
+    name = "polymer3_lib",
+    srcs = [
+        ":polymer3_lib_binary.js",
+    ],
+    path = "/tb-polymer3",
+    deps = [
+        ":polymer3_lib_binary",
     ],
 )
 

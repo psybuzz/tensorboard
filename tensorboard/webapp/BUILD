@@ -112,6 +112,7 @@ tf_web_library(
     deps = [
         ":tb_webapp",
         "//tensorboard/components:polymer_lib_binary",
+        "//tensorboard/components_polymer3:polymer3_lib",
         "//tensorboard/plugins/debugger_v2/tf_debugger_v2_plugin/views/source_code/monaco:requirejs",
     ],
 )
