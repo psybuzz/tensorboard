@@ -15,6 +15,7 @@ limitations under the License.
 
 // Add dashboards here.
 import '../plugins/text/polymer3/tf_text_dashboard/tf-text-dashboard';
+import '../plugins/histogram/polymer3/tf_histogram_dashboard/tf-histogram-dashboard';
 
 // Exported Polymer <-> Angular interop (to be removed).
 import './tf_backend/tf-backend-polymer';
