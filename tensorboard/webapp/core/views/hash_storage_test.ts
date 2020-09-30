@@ -41,7 +41,7 @@ class TestableDeeplinker implements DeepLinkerInterface {
   setPluginId(pluginId: string) {}
 }
 
-describe('hash storage test', () => {
+fdescribe('hash storage test', () => {
   let store: MockStore<State>;
   let dispatchSpy: jasmine.Spy;
   let setPluginIdSpy: jasmine.Spy;
@@ -59,6 +59,7 @@ describe('hash storage test', () => {
     }).compileComponents();
     store = TestBed.inject<Store<State>>(Store) as MockStore<State>;
     dispatchSpy = spyOn(store, 'dispatch');
+    store.overrideSelector(getActiveRoute, buildRoute());
 
     const deepLinker = TestBed.inject(HashDeepLinker);
     setPluginIdSpy = spyOn(deepLinker, 'setPluginId');
@@ -165,5 +166,25 @@ describe('hash storage test', () => {
     expect(dispatchSpy).toHaveBeenCalledWith(
       pluginUrlHashChanged({plugin: 'bar'})
     );
+  });
+
+  it('waits for an activeRoute before setting active plugin', () => {
+    store.overrideSelector(getActiveRoute, null);
+    store.overrideSelector(getActivePlugin, 'foo');
+    const fixture = TestBed.createComponent(HashStorageContainer);
+    fixture.detectChanges();
+
+    store.overrideSelector(getActivePlugin, 'bar');
+    store.refreshState();
+    fixture.detectChanges();
+
+    expect(setPluginIdSpy).not.toHaveBeenCalled();
+
+    store.overrideSelector(getActiveRoute, buildRoute());
+    store.refreshState();
+    fixture.detectChanges();
+
+    expect(setPluginIdSpy).toHaveBeenCalledTimes(1);
+    expect(setPluginIdSpy).toHaveBeenCalledWith('bar', jasmine.any(Object));
   });
 });

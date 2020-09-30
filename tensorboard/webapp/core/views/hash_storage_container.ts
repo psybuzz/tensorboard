@@ -13,11 +13,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {Store, select} from '@ngrx/store';
+import {Store} from '@ngrx/store';
+import {combineLatest} from 'rxjs';
+import {filter, map} from 'rxjs/operators';
 
-import {getActivePlugin} from '../store';
-import {State} from '../store/core_types';
+import {State} from '../../app_state';
+import {getActiveRoute} from '../../selectors';
 import {pluginUrlHashChanged} from '../actions';
+import {getActivePlugin} from '../store';
 
 import {ChangedProp} from './hash_storage_component';
 
@@ -42,7 +45,13 @@ import {ChangedProp} from './hash_storage_component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HashStorageContainer {
-  readonly activePluginId$ = this.store.pipe(select(getActivePlugin));
+  readonly activePluginId$ = combineLatest([
+    this.store.select(getActivePlugin),
+    this.store.select(getActiveRoute),
+  ]).pipe(
+    filter(([activePlugin, activeRoute]) => Boolean(activeRoute)),
+    map(([activePlugin, activeRoute]) => activePlugin)
+  );
 
   constructor(private readonly store: Store<State>) {}
 

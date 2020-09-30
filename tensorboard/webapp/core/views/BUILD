@@ -11,12 +11,15 @@ ng_module(
         "hash_storage_module.ts",
     ],
     deps = [
+        "//tensorboard/webapp:app_state",
+        "//tensorboard/webapp:selectors",
         "//tensorboard/webapp/core/actions",
         "//tensorboard/webapp/core/store",
         "//tensorboard/webapp/deeplink",
         "@npm//@angular/common",
         "@npm//@angular/core",
         "@npm//@ngrx/store",
+        "@npm//rxjs",
     ],
 )
 
