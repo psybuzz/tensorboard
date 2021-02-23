@@ -124,3 +124,30 @@ following lifecycle:
 -   Loading graph data into runtime
 -   Parsing the graph data
 -   Processing an internal representation
+
+Communicating the inner workings of the Graph dashboard requires introducing
+some dashboard-specific concepts used throughout the web frontend code. Much of
+this terminology comes from
+[existing literature](https://www.cs.ubc.ca/labs/imager/tr/2008/Archambault_GrouseFlocks_TVCG/grouseFlocksSub.pdf).
+
+Glossary
+
+-  **GraphDef**: Tied to TensorFlow's [graph.proto](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/framework/graph.proto)
+-  **NodeDef / RawNode**: Tied to TensorFlow's [node_def.proto](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/framework/node_def.proto)
+-  **OpNode**: The result of 'normalizing' a raw NodeDef.
+-  **BaseEdge**: An edge between two OpNodes.
+-  **SlimGraph**: A lightweight structure containing OpNodes and BaseEdges.
+-  **MetaNode**: A node that may contain other OpNodes or MetaNodes as children.
+-  **MetaEdge**: An edge between two OpNode/MetaNodes.
+-  **Hierarchy / GraphHierarchy / HierarchyImpl**: A heavy internal structure storing the graph's root, an index of all nodes/metanodes for quick lookup, and various other stats that are expensive to compute.
+-  **Cluster**: This refers to a group of 'similar' OpNodes or MetaNodes, depending on the context. When discussing OpNodes only, this usually refers to a set of OpNodes which all share the same 'op' property. In other contexts, a cluster may be a group of MetaNodes who all have a similar subgraph structure.
+-  **Level**: distance from the node to the artificial root node. Top-level metanodes have level 0, and going deeper increases the level. Can be determined from counting '/' slash occurences in a node name.
+-  **Depth**: distance to the node to its bottom-most leaf descendant. A MetaNode, containing only 1 child OpNode, has depth 1.
+-  **RenderHierarchy / RenderGraphInfo / RenderGraph**: A structure storing rendering information, including x/y coordinates for each node.
+-  **SubHierarchy**: TODO
+-  **BridgeGraph**: TODO
+
+Special types
+- Reference edge: an edge to an operation that takes a 'reference' to its input and changes its value. Examples: `Assign`, `AssignAdd`, `ScatterAdd`.
+- Control dependency / Control edge: an edge to an operation that is a control dependency. In TF1, control dependencies are added manually by users to enforce the order of execution of 2 branches in a graph, when the order would otherwise be ambiguous. See this [example post](https://stackoverflow.com/questions/55094952/understanding-tensorflow-control-dependencies), official [docs](https://www.tensorflow.org/api_docs/python/tf/control_dependencies), and the [TF2 guide](https://www.tensorflow.org/guide/effective_tf2). In TF2, the framework automatically determines control dependencies without user annotations when using eager execution.
+- Embedding node / in-embedding / out-embedding: nodes that TensorBoard considers visually less significant in the graph. In-embeddings refer to 'Const' op nodes, while Out-embeddings refers to 'Summary' op nodes. Both commonly appear in programs as a dangling input or output. TensorBoard's Graph dashboard automatically treats these nodes differently by making them visually smaller, and attaches them 'to the side' of their neighbor nodes.
