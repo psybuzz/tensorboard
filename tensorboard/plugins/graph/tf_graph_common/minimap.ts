@@ -141,6 +141,11 @@ export class Minimap {
       d3.zoomIdentity.translate(mainX, mainY).scale(this.scaleMain)
     );
   }
+  async getImageBlob() {
+    return new Promise<Blob>((resolve) => {
+      this.downloadCanvas.toBlob((blob) => resolve(blob), 'image/png');
+    });
+  }
   /**
    * Redraws the minimap. Should be called whenever the main svg
    * was updated (e.g. when a node was expanded).
@@ -159,31 +164,6 @@ export class Minimap {
       // detached from the dom.
       return;
     }
-    let $download = d3.select('#graphdownload');
-    this.download = <HTMLLinkElement>$download.node();
-    $download.on('click', (d) => {
-      // Revoke the old URL, if any. Then, generate a new URL.
-      URL.revokeObjectURL(this.download.href);
-      // We can't use the `HTMLCanvasElement.toBlob` API because it does
-      // not have a synchronous variant, and we need to update this href
-      // synchronously. Instead, we create a blob manually from the data
-      // URL.
-      const dataUrl = this.downloadCanvas.toDataURL('image/png');
-      const prefix = dataUrl.slice(0, dataUrl.indexOf(','));
-      if (!prefix.endsWith(';base64')) {
-        console.warn(
-          `non-base64 data URL (${prefix}); cannot use blob download`
-        );
-        (this.download as any).href = dataUrl;
-        return;
-      }
-      const data = atob(dataUrl.slice(dataUrl.indexOf(',') + 1));
-      const bytes = new Uint8Array(data.length).map((_, i) =>
-        data.charCodeAt(i)
-      );
-      const blob = new Blob([bytes], {type: 'image/png'});
-      (this.download as any).href = (URL as any).createObjectURL(blob);
-    });
     let $svg = d3.select(this.svg);
     // Read all the style rules in the document and embed them into the svg.
     // The svg needs to be self contained, i.e. all the style rules need to be

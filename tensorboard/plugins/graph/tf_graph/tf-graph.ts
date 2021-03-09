@@ -31,7 +31,7 @@ import {LegacyElementMixin} from '../../../components/polymer/legacy_element_mix
 import {ColorBy} from '../tf_graph_common/view_types';
 
 @customElement('tf-graph')
-class TfGraph extends LegacyElementMixin(PolymerElement) {
+export class TfGraph extends LegacyElementMixin(PolymerElement) {
   static readonly template = html`
     <style>
       .container {
@@ -332,6 +332,9 @@ class TfGraph extends LegacyElementMixin(PolymerElement) {
   }
   fit() {
     (this.$.scene as any).fit();
+  }
+  async getImageBlob() {
+    return (this.$.scene as TfGraphScene2).getImageBlob();
   }
   _graphChanged() {
     if (!this.graphHierarchy) {
